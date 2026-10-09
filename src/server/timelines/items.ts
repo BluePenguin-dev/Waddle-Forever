@@ -119,6 +119,8 @@ export function getIncludedCatalogIndex(): OldCatalogIndex {
 buildCatalogIndex(CATALOG_ADDED_ITEMS_INDEX, CATALOG_INCLUDED_ITEMS_INDEX);
 
 // partyItems logic
+type PartyItemListing = number | { readonly id: number; readonly until?: Version };
+
 type NewPartyIndex = Array<{
   readonly start: Version;
   readonly end: Version | null;
@@ -131,31 +133,25 @@ type OldPartyIndex = Array<{
   readonly items: number[]
 }>;
 
-// The timeline entry has temp and end next to date. CPUpdateE does not.
-type PartyTimelineEntry = {
-  readonly date: Version;
-  readonly update: CPUpdateE;
-  readonly temp?: {
-    readonly party?: {
-      readonly partyItems?: readonly number[];
-    };
-  };
-  readonly end?: readonly string[];
-};
-
 const PARTY_ADDED_ITEMS_INDEX: NewPartyIndex = [];
 const PARTY_INCLUDED_ITEMS_INDEX: OldPartyIndex = [];
-const PARTY_TIMELINE = UPDATES as readonly PartyTimelineEntry[];
 
-// Fills the two indexes from temp.party.partyItems.
-// An id opens when a party lists it and closes on end: ['party'], so the gap before the next party is empty.
+// A listing is either a plain id, or { id, until } for an item pulled before the party ended
+// This returns the id either way
+function partyItemId(item: PartyItemListing): number {
+  return typeof item === 'number' ? item : item.id;
+}
+
+// Walks UPDATES once and fills the two indexes
+// An item opens when a party lists it, and normally closes on end: ['party'].
 function buildPartyItemIndex(newIndex: NewPartyIndex, oldIndex: OldPartyIndex): void {
   const partyEndByStart = new Map<Version, Version>();
   let partyStart: Version | null = null;
 
-  for (const { date, temp, end } of PARTY_TIMELINE) {
-    if (temp?.party !== undefined) partyStart = date;
-    if (end?.includes('party') && partyStart !== null) {
+  // Pair each party start with the later end: ['party'] date
+  for (const { date, update } of UPDATES) {
+    if (update.temp?.party !== undefined) partyStart = date;
+    if (update.end?.includes('party') && partyStart !== null) {
       partyEndByStart.set(partyStart, date);
       partyStart = null;
     }
@@ -164,25 +160,35 @@ function buildPartyItemIndex(newIndex: NewPartyIndex, oldIndex: OldPartyIndex): 
   const opens: Array<{ date: Version; id: number; until: Version | null }> = [];
   let partyEnd: Version | null = null;
 
-  const openAll = (date: Version, items: readonly number[]) => {
-    for (const id of items) {
-      if (partyEnd === null || date < partyEnd) opens.push({ date, id, until: partyEnd });
+  // Open every listed item. 'until' is the party end, unless this item has an earlier exception
+  // until: null means the party has no end entry yet, so the item is still available.
+  const openAll = (date: Version, items: readonly PartyItemListing[]) => {
+    for (const item of items) {
+      const explicit = typeof item === 'number' ? undefined : item.until;
+      const until = explicit !== undefined && (partyEnd === null || explicit < partyEnd)
+        ? explicit
+        : partyEnd;
+      if (until === null || date < until) opens.push({ date, id: partyItemId(item), until });
     }
   };
 
-  for (const { date, temp, end } of PARTY_TIMELINE) {
-    const items = temp?.party?.partyItems;
-    if (temp?.party !== undefined && partyEndByStart.has(date)) {
+  for (const { date, update } of UPDATES) {
+    if (update.temp?.party !== undefined) {
       partyEnd = partyEndByStart.get(date) ?? null;
-      if (items !== undefined) openAll(date, items);
-    } else if (items !== undefined && partyEnd !== null) {
-      // A later temp.party.partyItems list while this party is still open.
-      openAll(date, items);
+      openAll(date, update.temp.party.items ?? []);
     }
-    if (end?.includes('party')) partyEnd = null;
+    // A mid-party release. It still closes with this party unless it has its own until.
+    if (update.partyItems?.newItems !== undefined && partyEnd !== undefined) {
+      openAll(date, update.partyItems.newItems);
+    }
+    if (update.end?.includes('party')) partyEnd = null;
   }
 
+  // Every open and every close is a date where the obtainable set changes.
+  // The first timeline date is included so the stretch before the first party is empty too.
   const points = new Set<Version>();
+  const timelineStart = UPDATES[0]?.date;
+  if (timelineStart !== undefined) points.add(timelineStart);
   for (const open of opens) {
     points.add(open.date);
     if (open.until !== null) points.add(open.until);
@@ -193,6 +199,7 @@ function buildPartyItemIndex(newIndex: NewPartyIndex, oldIndex: OldPartyIndex): 
 
   for (let i = 0; i < dates.length; i++) {
     const date = dates[i];
+    // Close first, so a party end does not count as still obtainable on that date.
     for (const open of opens) if (open.until === date) included.delete(open.id);
 
     const newItems: number[] = [];
@@ -203,17 +210,17 @@ function buildPartyItemIndex(newIndex: NewPartyIndex, oldIndex: OldPartyIndex): 
       }
     }
 
+    // newIndex records what opened on this date. oldIndex records everything still open after that.
+    // end is the next change date, or null if nothing else changes.
     newIndex.push({ start: date, end: dates[i + 1] ?? null, newItems });
     oldIndex.push({ start: date, end: dates[i + 1] ?? null, items: [...included] });
   }
 }
 
-// Dates where party items opened.
 export function getAddedPartyItemIndex(): NewPartyIndex {
   return PARTY_ADDED_ITEMS_INDEX;
 }
 
-// What was obtainable in each stretch, including the empty gap between parties.
 export function getIncludedPartyItemIndex(): OldPartyIndex {
   return PARTY_INCLUDED_ITEMS_INDEX;
 }
