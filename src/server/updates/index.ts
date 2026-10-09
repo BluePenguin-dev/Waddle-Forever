@@ -140,6 +140,7 @@ export type CPUpdate = {
   eliteGearItems?: number[];
   gameUpgrades?: { newItems: number[]; removed: number[] };
 
+  partyItems?: number[];
   testingItems?: number[];
   exploreItems?: number[];
   nintendoItems?: number[];
