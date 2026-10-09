@@ -477,6 +477,7 @@ export const UPDATES_2005: Update[] = [
     temp: {
     party: {
         partyName: 'Christmas Party',
+        items: [173, 414],
         rooms: {
           'coffee': 'fix:CP05Coffee.swf',
           'dance': 'fix:CP05Dance.swf',

@@ -4,7 +4,7 @@ import { getTestingItems } from "@server/game-logic/items-testing";
 import { CardJitsuProgress, getFireReward, getSnowReward, MAX_FIRE_RANK, MAX_SNOW_RANK, SNOW_NINJA_RANK } from "@server/game-logic/ninja-progress";
 import { addDays, getDaysDelta, isGreaterOrEqual, isLower, isLowerOrEqual, Version, versionToEpoch } from "@server/routes/versions";
 import { GameData } from "@server/timelines/game-data";
-import { getAddedCatalogIndex, getIncludedCatalogIndex } from "@server/timelines/items";
+import { getAddedCatalogIndex, getIncludedCatalogIndex, getAddedPartyItemIndex, getIncludedPartyItemIndex } from "@server/timelines/items";
 import { BotAttributes, generateRandomOutfit } from "./bot";
 import { DateReference } from "@server/updates";
 import { getDate, START_DATE } from "@server/timelines/dates";
@@ -12,6 +12,7 @@ import { getDefaultPenguin, PenguinJson } from "@server/database/database";
 import { getExploreItems } from "@server/game-logic/items-explore";
 import { getNintendoItems, IBITZ_ITEMS } from "@server/game-logic/items-transfer";
 import { getMissionItems } from "@server/game-logic/items-mission";
+
 
 // TODO -> Easter Egg names
 //         Game Day NPCs
@@ -45,6 +46,28 @@ function addClothingItems(inventory: Set<number>, data: GameData, startDate: Ver
   }
 
   // add all items in first catalog, then only add new items for next catalogs
+  includedIndex[startIndex].items.forEach(buyItem);
+
+  for (let i = startIndex + 1; i <= endIndex; i++) {
+    addedIndex[i].newItems.forEach(buyItem);
+  }
+}
+
+function addPartyItems(inventory: Set<number>, data: GameData, startDate: Version, member: boolean, buyChance: number): void {
+  const addedIndex = getAddedPartyItemIndex();
+  const includedIndex = getIncludedPartyItemIndex();
+  const contains = ({ end }: { end: Version | null }, date: Version) => end === null || date < end;
+
+  const startIndex = findFirstIndexEqualOrGreater(startDate, addedIndex, contains);
+  const endIndex = findFirstIndexEqualOrGreater(data.getDate(), addedIndex, contains);
+  if (startIndex < 0 || endIndex < startIndex) return;
+
+  const buyItem = (item: number) => {
+    if ((member || data.getItem(item)?.isMember === false) && Math.random() < buyChance) {
+      inventory.add(item);
+    }
+  };
+
   includedIndex[startIndex].items.forEach(buyItem);
 
   for (let i = startIndex + 1; i <= endIndex; i++) {
@@ -171,6 +194,7 @@ function generateRandomInventory(
 
   const today = data.getDate();
   addClothingItems(inventory, data, startDate, member, attrs.collectorMania);
+  addPartyItems(inventory, data, startDate, member, attrs.collectorMania);
   addTestingItems(inventory, today, startDate, attrs.tester);
   addNinjaItems(inventory, ninjaRank);
   addElementalItems(inventory, data, member, fireRank, waterRank, snowRank);
