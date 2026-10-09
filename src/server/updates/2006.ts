@@ -49,7 +49,7 @@ export const UPDATES_2006: Update[] = [
     temp: {
       party: {
         partyName: 'Winter Luau',
-        items: [171],
+        partyItems: [171],
         rooms: {
           dance: 'fix:ArtworkRoomsDance2_luau.swf',
           dock: 'fix:ArtworkRoomsDock3_luau.swf',
@@ -125,7 +125,7 @@ export const UPDATES_2006: Update[] = [
     temp: {
       party: {
         partyName: 'Pizza Parlor Opening Party',
-        items: [240, 424],
+        partyItems: [240, 424],
         rooms: {
           'forts': 'archives:ArtworkRoomsForts11.swf',
           'pizza': 'archives:ArtworkRoomsPizza10.swf',
@@ -197,7 +197,7 @@ export const UPDATES_2006: Update[] = [
       party: {
         partyStart: 'A celebration for St. Patrick\'s Day and Puffles starts',
         partyEnd: 'The St. Patrick\'s Day and Puffle party ends',
-        items: [425],
+        partyItems: [425],
         rooms: {
           'village': 'archives:ArtworkRooms0401Village.swf',
           'plaza': 'archives:ArtworkRoomsPlaza11.swf',
@@ -245,7 +245,7 @@ export const UPDATES_2006: Update[] = [
     temp: {
       party: {
         partyName: 'April Fools\' Party',
-        items: [407],
+        partyItems: [407],
         rooms: {
           'dojo': 'archives:ArtworkRooms0401Dojo.swf',
           'rink': 'archives:ArtworkRooms0401Rink.swf',
@@ -315,7 +315,7 @@ export const UPDATES_2006: Update[] = [
       party: {
         partyName: 'Easter Egg Hunt',
         decorated: false,
-        items: [427],
+        partyItems: [427],
         rooms: {
           'book': 'archives:ArtworkRooms0416Book10.swf',
           'berg': 'archives:ArtworkRooms0416Berg10.swf',
@@ -477,7 +477,7 @@ export const UPDATES_2006: Update[] = [
     temp: {
       party: {
         partyName: 'Underground Opening Party',
-        items: [429],
+        partyItems: [429],
         rooms: {
           'mine': 'archives:ArtworkRoomsMine10.swf',
           boiler: 'recreation:cave_opening/boiler.swf',
@@ -561,7 +561,7 @@ export const UPDATES_2006: Update[] = [
     temp: {
       party: {
         partyName: 'Summer Party',
-        items: [193, 325],
+        partyItems: [193, 325],
         rooms: {
           'beach': 'archives:ArtworkRooms0615Beach10.swf',
           'boiler': 'archives:ArtworkRooms0615Boiler12.swf',
@@ -610,7 +610,7 @@ export const UPDATES_2006: Update[] = [
     temp: {
       party: {
         update: 'Two new items are available for the Summer Party',
-        items: [194, 274],
+        partyItems: [194, 274],
         rooms: {
           'beach': 'archives:ArtworkRooms0615Beach11.swf',
           'plaza': 'archives:ArtworkRooms0615Plaza19.swf'
@@ -667,7 +667,7 @@ export const UPDATES_2006: Update[] = [
     temp: {
       party: {
         partyName: 'Western Party',
-        items: [192],
+        partyItems: [192],
         rooms: {
           plaza: 'archives:ArtworkRoomsPlaza20.swf',
           forts: 'archives:ArtworkRoomsForts14.swf',
@@ -701,7 +701,7 @@ export const UPDATES_2006: Update[] = [
     temp: {
       party: {
         partyName: 'Band Scavenger Hunt',
-        items: [917],
+        partyItems: [917],
         decorated: false,
         rooms: {
           'boiler': 'archives:ArtworkRoomsBoiler11.swf',
@@ -770,7 +770,7 @@ export const UPDATES_2006: Update[] = [
     temp: {
       party: {
         partyName: 'Sports Party',
-        items: [133, 134],
+        partyItems: [133, 134],
         rooms: {
           'beach': 'archives:ArtworkRoomsBeach13.swf',
           'cave': 'archives:ArtworkRoomsCave14.swf',
@@ -874,7 +874,7 @@ export const UPDATES_2006: Update[] = [
     temp: {
       party: {
         update: 'A new item is in the Snow Forts for the Sports Party',
-        items: [369],
+        partyItems: [369],
         rooms: {
           forts: 'archives:ArtworkRoomsForts17.swf'
         },
@@ -968,7 +968,7 @@ export const UPDATES_2006: Update[] = [
     furnitureCatalog: 'archives:Furniture_0609.swf',
     temp: {
       event: {
-        items: [926],
+        partyItems: [926],
         rooms: {
           attic: 'recreation:lightbulb/attic.swf',
           boiler: 'recreation:lightbulb/boiler.swf',
@@ -994,7 +994,7 @@ export const UPDATES_2006: Update[] = [
     temp: {
       party: {
         partyName: 'Lighthouse Party',
-        items: [440],
+        partyItems: [440],
         rooms: {
           light: 'recreation:lighthouse_party_2006/light.swf',
           beacon: 'recreation:lighthouse_party_2006/beacon.swf',
@@ -1642,7 +1642,7 @@ export const UPDATES_2006: Update[] = [
     temp: {
       party: {
         partyName: '1st Anniversary',
-        items: [444],
+        partyItems: [444],
         rooms: {
           coffee: 'recreation:1st_anniversary_coffee.swf'
         }
@@ -1674,7 +1674,7 @@ export const UPDATES_2006: Update[] = [
       party: {
         partyName: 'Halloween Party',
         partyIcon: 'halloween',
-        items: [443],
+        partyItems: [443],
         rooms: {
           attic: 'recreation:halloween_2006/attic.swf',
           pizza: 'recreation:halloween_2006/pizza.swf',
@@ -1776,7 +1776,7 @@ export const UPDATES_2006: Update[] = [
     temp: {
       party: {
         partyName: 'Color Party',
-        items: [13, 304],
+        partyItems: [13, 304],
         rooms: {
           dojo: 'recreation:color_party_2006/dojo.swf'
         },
@@ -1885,7 +1885,7 @@ export const UPDATES_2006: Update[] = [
     temp: {
       party2: {
         partyName: 'Christmas Party',
-        items: [162, 414],
+        partyItems: [162, 414],
         rooms: {
           beacon: 'recreation:christmas_06/beacon.swf',
           coffee: 'recreation:christmas_06/coffee.swf',
